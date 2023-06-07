@@ -1,0 +1,361 @@
+{% load static %} {% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Disk Scheduling</title>
+        {% tailwind_css %}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="icon" type="image/png" href="{% static 'assets/icons/pythonicon.png' %}" />
+    </head>
+    <body class="bg-body-bg">
+        <div class="main p-4 sm:p-8">
+            <h1 class="text-[#66FCF1] font-bold text-3xl sm:text-5xl text-center">Disk Scheduling Algorithm</h1>
+            <form method="post" id="algorithmForm" action="">
+                <!-- job_count='job_count' previously_served='previously_served' starting_position='starting_position' starting_track='starting_track' ending_track='ending_track' -->
+                {% csrf_token %}
+                <div class="flex flex-col items-center">
+                    <div class="relative z-0 w-full max-w-xs m-5">
+                        <div class="relative z-0 m-5">
+                            <input
+                                oninput="generateInputFields()"
+                                id="jobCountInput"
+                                type="number"
+                                id="floating_standard"
+                                name="job_count"
+                                class="block py-2.5 px-0 w-full text-white text-xl font-bold bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                placeholder=""
+                            />
+                            <label
+                                for="floating_standard"
+                                class="absolute font-bold text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                            >
+                                Input number of jobs.
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="lg:flex lg:flex-row lg:justify-center sm:justify-center lg:w-full lg:h-96 ">
+                        <div class="flex flex-col w-full lg:justify-center mr-8 lg:mb-0 mb-2">
+                            <div class=" rounded-lg text-white text-center font-bold text-lg overflow-y-auto border-2 border-[#45A29E] h-full ">
+                                <h1 class="m-2">Arrival Time</h1>
+                                <div class="m-5" id="inputFieldsContainer">
+                                    {% for key, value in input_values.items %}
+                                      {% if key|slice:'0:4' == 'job_' %}
+                                        <input
+                                          type="number"
+                                          name="{{ key }}"
+                                          class="block py-2.5 px-0 w-full text-lg text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 mb-3 peer"
+                                          placeholder="{{ value }}"
+                                          value="{{ input_values.key }}"
+                                          required
+                                        />
+                                      {% endif %}
+                                    {% endfor %}
+                                  </div>
+
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col w-full lg:justify-center">
+                            <div class="rounded-lg text-white font-bold text-lg border-2 border-[#45A29E] h-full">
+                                <h1 class="m-2 text-center">Requirements</h1>
+
+                                <div class="p-3">
+                                    <div class="relative z-0 m-2">
+                                        <input
+                                            type="number"
+                                            id="floating_standard"
+                                            name="previously_served"
+                                            class="block py-2.5 px-0 w-full text-white text-xl font-bold bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                            placeholder=" "
+                                            value="{{ input_values.previously_served }}"
+                                            required
+                                        />
+                                        <label
+                                            for="floating_standard"
+                                            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                        >
+                                            Previously Served
+                                        </label>
+                                    </div>
+
+                                    <div class="relative z-0 m-2">
+                                        <input
+                                            type="number"
+                                            id="floating_standard"
+                                            name="starting_position"
+                                            class="block py-2.5 px-0 w-full text-white text-xl font-bold bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                            placeholder=" "
+                                            value="{{ input_values.starting_position }}"
+                                            required
+                                        />
+
+                                        <label
+                                            for="floating_standard"
+                                            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                        >
+                                            Starting Position
+                                        </label>
+                                    </div>
+
+                                    <div class="relative z-0 m-2">
+                                        <input
+                                            type="number"
+                                            id="starting_track"
+                                            name="starting_track"
+                                            class="block py-2.5 px-0 w-full text-white text-xl font-bold bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                            placeholder=" "
+                                            value="{{ input_values.starting_track }}"
+                                            required
+                                        />
+                                        <label
+                                            for="floating_standard"
+                                            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                        >
+                                            Starting Track
+                                        </label>
+                                    </div>
+
+                                    <div class="relative z-0 m-2">
+                                        <input
+                                            type="number"
+                                            id="ending_track"
+                                            name="ending_track"
+                                            class="block py-2.5 px-0 w-full text-white text-xl font-bold bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                            placeholder=" "
+                                            value="{{ input_values.ending_track }}"
+                                            required
+                                        />
+                                        <label
+                                            for="floating_standard"
+                                            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                        >
+                                            Ending Track
+                                        </label>
+                                    </div>
+
+                                    <div class="relative z-0 m-2">
+                                        <input
+                                            type="number"
+                                            id="arm_movement"
+                                            name="arm_movement"
+                                            class="block py-2.5 px-0 w-full text-white text-xl font-bold bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                            placeholder=" "
+                                            value="{{ input_values.arm_movement }}"
+                                            required
+                                        />
+                                        <label
+                                            for="floating_standard"
+                                            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                                        >
+                                            Arm Movement Per Cyclinder
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end w-full">
+                        <button id="clearButton" type="button" class="px-4 py-2 text-white bg-red-900 mt-2 rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:bg-red-700">
+                          Clear All
+                        </button>
+                    </div>
+
+                    <div class="flex justify-center items-center w-full m-10 p-5">
+                        <button
+                            data-modal-target="#choose-algo"
+                            data-modal-toggle="defaultModal"
+                            type="button"
+                            class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800"
+                        >
+                            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                Choose Algorithm
+                            </span>
+                        </button>
+                        {% include "diskscheduling/algomodal.html" %}
+                    </div>
+                </div>
+            </form>
+            <!-- <div class="flex justify-center items-center">
+                {% if input_values %}
+                {% include "diskscheduling/fcfschart.html" %}
+                {% endif %}
+            </div> -->
+        </div>
+
+    </body>
+
+    <script>
+        function generateInputFields() {
+            const jobCount = document.getElementById("jobCountInput").value;
+            const container = document.getElementById("inputFieldsContainer");
+            container.innerHTML = "";
+
+            for (let i = 1; i <= jobCount; i++) {
+              const inputWrapper = document.createElement("div");
+              inputWrapper.className = "flex items-center mb-3";
+
+              const label = document.createElement("label");
+              label.textContent = `Job ${i}`;
+              label.htmlFor = `job_${i}`;
+              label.className = "mr-2 text-sm";
+              inputWrapper.appendChild(label);
+
+              const inputField = document.createElement("input");
+              inputField.type = "number";
+              inputField.name = `job_${i}`;
+              inputField.className =
+                "block py-2.5 px-0 w-full text-lg text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer";
+              inputField.placeholder = `Input job ${i}`;
+              inputField.required = true;
+
+              // Retrieve the value from local storage
+              const storedValue = localStorage.getItem(inputField.name);
+              if (storedValue) {
+                inputField.value = storedValue;
+              }
+
+              // Add an event listener to store the value in local storage on change
+              inputField.addEventListener("input", function (event) {
+                localStorage.setItem(inputField.name, event.target.value);
+              });
+
+              inputWrapper.appendChild(inputField);
+
+              const removeButton = document.createElement("button");
+                removeButton.textContent = "X";
+                removeButton.className = "ml-2 btn px-3 bg-red-900 w-auto rounded-md hover:bg-red-700";
+                removeButton.addEventListener("click", function () {
+                // Remove the input field from the container
+                container.removeChild(inputWrapper);
+                // Remove the value from local storage
+                localStorage.removeItem(inputField.name);
+                // Update the jobCount input field value
+                document.getElementById("jobCountInput").value = container.children.length;
+
+                // Update the input names and stored values for the remaining input fields
+                const remainingInputs = container.querySelectorAll("input");
+                remainingInputs.forEach((input, index) => {
+                    const newName = `job_${index + 1}`;
+                    input.name = newName;
+                    const storedValue = localStorage.getItem(newName);
+                    if (storedValue) {
+                    input.value = storedValue;
+                    }
+                    // Update the label text
+                    const label = input.previousSibling;
+                    label.textContent = `Job ${index + 1}`;
+                });
+                });
+
+                inputWrapper.appendChild(label);
+                inputWrapper.appendChild(inputField);
+                inputWrapper.appendChild(removeButton);
+                container.appendChild(inputWrapper);
+
+
+            }
+          }
+
+          // Call generateInputFields() when the page loads
+          window.onload = function () {
+            generateInputFields();
+          };
+
+
+
+
+        //------Modal for Choosing Algorithm-------
+        //Algorithms modal
+        // Get all the modal toggle buttons
+        const modalToggleButtons = document.querySelectorAll("[data-modal-toggle]");
+        // Loop through each button and add a click event listener
+        modalToggleButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                // Get the target modal using the data-modal-target attribute
+                const targetModal = document.querySelector(button.dataset.modalTarget);
+                // Toggle the hidden class of the target modal
+                targetModal.classList.toggle("hidden");
+                // Get the cancel button inside the target modal
+                const cancelButton = targetModal.querySelector("#cancel-btn");
+                // Add a click event listener to the cancel button to hide the modal
+                cancelButton.addEventListener("click", () => {
+                    targetModal.classList.add("hidden");
+                });
+            });
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var clearButton = document.getElementById('clearButton');
+            clearButton.addEventListener('click', function() {
+              // Clear all input fields except the specific field
+              var inputFields = document.querySelectorAll('input[type="number"]');
+              inputFields.forEach(function(field) {
+                if (field.id !== 'jobCountInput') {
+                  field.value = '';
+                }
+              });
+            });
+          });
+
+
+
+
+
+          document.addEventListener("DOMContentLoaded", function () {
+            const algorithmForm = document.getElementById("algorithmForm");
+            const algorithmRadios = algorithmForm.elements["algorithm"];
+
+            algorithmForm.addEventListener("submit", function (event) {
+                event.preventDefault(); // Prevent form submission for demonstration purposes
+
+                let selectedAlgorithm;
+                for (let i = 0; i < algorithmRadios.length; i++) {
+                    if (algorithmRadios[i].checked) {
+                        selectedAlgorithm = algorithmRadios[i].value;
+                        break;
+                    }
+                }
+
+                if (selectedAlgorithm) {
+                    algorithmForm.action = `/${selectedAlgorithm.toLowerCase()}/`;
+                    algorithmForm.submit(); // Submit the form
+                } else {
+                    console.log("No algo selected")
+                }
+            });
+        });
+
+
+
+// Store the input values in web storage
+function storeInputValues() {
+    const inputFields = document.querySelectorAll('input[type="number"]');
+    inputFields.forEach(function (field) {
+      localStorage.setItem(field.name, field.value);
+    });
+  }
+
+  // Add an event listener to the form for storing the input values
+  const algorithmForm = document.getElementById("algorithmForm");
+  algorithmForm.addEventListener("input", storeInputValues);
+
+  // Retrieve the stored input values and populate the input fields on page load
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputFields = document.querySelectorAll('input[type="number"]');
+    inputFields.forEach(function (field) {
+      const storedValue = localStorage.getItem(field.name);
+      if (storedValue) {
+        field.value = storedValue;
+      }
+    });
+  });
+
+
+    </script>
+</html>

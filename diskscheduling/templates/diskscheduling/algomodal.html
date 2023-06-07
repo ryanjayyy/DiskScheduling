@@ -1,0 +1,66 @@
+{% load static %}
+<div id="choose-algo" class="fixed inset-0 flex items-center justify-center z-50 modal bg-gray-800 bg-opacity-80 hidden">
+    <div class="w-full max-w-2xl max-h-full bg-opacity-75 rounded-lg">
+        <!-- Modal content -->
+        <div class="relative border-2 border-[#66FCF1] text-white bg-[#1f2833]">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-400 rounded-t">
+                <h3 class="text-2xl font-semibold">Choose Algorithm</h3>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col space-y-2">
+                        <label>
+                            <input type="radio" name="algorithm" value="FIFO" class="mr-2">
+                            FIFO
+                        </label>
+                        <label>
+                            <input type="radio" name="algorithm" value="SSTF" class="mr-2">
+                            SSTF
+                        </label>
+                        <label>
+                            <input type="radio" name="algorithm" value="SCAN" class="mr-2">
+                            SCAN
+                        </label>
+                    </div>
+                    <div class="flex flex-col space-y-2">
+                        <label>
+                            <input type="radio" name="algorithm" value="C-SCAN" class="mr-2">
+                            C-SCAN
+                        </label>
+                        <label>
+                            <input type="radio" name="algorithm" value="LOOK" class="mr-2">
+                            LOOK
+                        </label>
+                        <label>
+                            <input type="radio" name="algorithm" value="C-LOOK" class="mr-2">
+                            C-LOOK
+                        </label>
+                    </div>
+                </div>                
+            </div>
+            <!-- Modal footer -->
+            <hr class="h-px my-2 bg-gray-400 border-0" />
+            <div class="flex flex-col sm:flex-row sm:justify-end p-4">
+                <button
+                    data-modal-target="#choose-algo"
+                    data-modal-toggle="defaultModal"
+                    type="submit"
+                    id="show-compute-btn"
+                    class="w-full mr-2 sm:w-auto mb-2 sm:mb-0 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                    Show and Compute
+                </button>
+                <button
+                    id="cancel-btn"
+                    type="button"
+                    class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

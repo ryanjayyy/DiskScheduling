@@ -1,0 +1,20 @@
+{% load static %} {% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <title>Disk Scheduling</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		{% tailwind_css %}
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	</head>
+
+	<body class="bg-body-bg">
+		<div class="main p-4 sm:p-8">
+            <h1 class="text-[#66FCF1] font-bold text-3xl sm:text-5xl text-center">Disk Scheduling Algorithm</h1>
+			{% block content %}
+			{% endblock content %}
+		</div>
+	</body>
+</html>
